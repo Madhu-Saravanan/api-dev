@@ -31,4 +31,7 @@ CREATE TABLE `apis`.`auth`
 	UNIQUE `username` (`username`)) 
 ENGINE = InnoDB;
 
+
+ALTER TABLE `auth` ADD `signup_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `token`;
+
 ```

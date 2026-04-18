@@ -2,6 +2,7 @@
 error_reporting(E_ALL ^ E_DEPRECATED);
 require_once("REST.api.php");
 require_once "libs/Database.class.php";
+require_once "libs/Signup.class.php";
 
 class API extends REST
 {
@@ -16,24 +17,6 @@ class API extends REST
         // Initiate Database connection
         $this->db = Database::getConnection();
     }
-
-    /* moved this function inside the libs folder 
-           Database connection
-       
-        private function dbConnect()
-        {
-            if ($this->db != NULL) {
-                return $this->db;
-            } else {
-                $this->db = mysqli_connect($this->DB_SERVER, $this->DB_USER, $this->DB_PASSWORD, $this->DB_NAME);
-                if (!$this->db) {
-                    die("Connection failed: " . mysqli_connect_error());
-                } else {
-                    return $this->db;
-                }
-            }
-        }
-    */
 
     /*
          * Public method for access api.
@@ -108,12 +91,55 @@ class API extends REST
     private function request_info()
     {
         $data = $this->json($_SERVER);
+        $this->response($data, 200);
     }
 
     function generate_hash()
     {
         $bytes = random_bytes(16);
         return bin2hex($bytes);
+    }
+
+    function hash_verify()
+    {
+        if ($this->get_request_method() != "POST") {
+            $error = array('status' => 'WRONG_CALL', "msg" => "The type of call can be accepted by our servers in POST.");
+            $error = $this->json($error);
+            $this->response($error, 406);
+        }
+
+        if (!isset($this->_request['password']) || !isset($this->_request['hash'])) {
+            $error = array('status' => 'Not Acceptable', "msg" => "password is missing.");
+            $error = $this->json($error);
+            $this->response($error, 406);
+        }
+
+        $data['verified'] = password_verify($this->_request['password'], $this->_request['hash']);
+        $data['hash_info'] = password_get_info($this->_request['hash']);
+
+        $data = $this->json($data);
+        $this->response($data, 200);
+    }
+
+    function user_signup()
+    {
+        if ($this->get_request_method() != "POST") {
+            $error = array('status' => 'WRONG_CALL', "msg" => "The type of call can be accepted by our servers in POST.");
+            $error = $this->json($error);
+            $this->response($error, 406);
+        }
+
+        if (!isset($this->_request['username']) || !isset($this->_request['password'])) {
+            $error = array('status' => 'Not Acceptable', "msg" => "username or password is missing.");
+            $error = $this->json($error);
+            $this->response($error, 406);
+        }
+
+        $username = (isset($this->_request['username'])) ? $this->_request['username'] : "default";
+        $password = (isset($this->_request['password'])) ? $this->_request['password'] : "default";
+        $email    = (isset($this->_request['email'])) ? $this->_request['email'] : "deafult";
+
+        $signup = new Signup($username, $password, $email);
     }
 
 

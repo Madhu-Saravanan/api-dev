@@ -8,18 +8,13 @@ class API extends REST
 
     public $data = "";
 
-    private $DB_SERVER = "localhost";
-    private $DB_USER = "root";
-    private $DB_PASSWORD = "";
-    private $DB_NAME = "apis";
-
     private $db = NULL;
 
     public function __construct()
     {
         parent::__construct(); // Init parent contructor
         // Initiate Database connection
-        Database::getConnection();
+        $this->db = Database::getConnection();
     }
 
     /* moved this function inside the libs folder 

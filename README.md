@@ -16,3 +16,19 @@ Right outside the document root, create a file called `env.json` and keep the co
 This will be called by the API functions to get the database connection. 
 
 This project is under development.
+
+Database schema 
+
+```
+CREATE TABLE `apis`.`auth` 
+(	`id` INT NOT NULL AUTO_INCREMENT , 
+	`username` VARCHAR(45) NOT NULL , 
+	`password` VARCHAR(512) NULL DEFAULT NULL , 
+	`email` VARCHAR(45) NULL DEFAULT NULL ,
+	`active` INT NULL DEFAULT NULL , 
+	`token` VARCHAR(512) NOT NULL , 
+	PRIMARY KEY (`id`), 
+	UNIQUE `username` (`username`)) 
+ENGINE = InnoDB;
+
+```
